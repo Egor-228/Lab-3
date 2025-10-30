@@ -1,59 +1,71 @@
 import tkinter as tk
+import random
 from tkinter import messagebox
-from sqrEq import sqrEquation
+from random import randint
+from pygame import mixer
 
-
-def close():
+def quit():
     window.destroy()
 
+def generate():
+    code = ''
+    for i in range(4):
+        number = randint(0,9)
+        alphabet = [chr(i).upper() for i in range(97, 123)]
+        letters = [alphabet[randint(0, len(alphabet) - 1)] for i in range(3)]
+        letters.insert(randint(0,4), str(number))
+        code += (''.join(letters))
+        code += '-'
+    word_label.config(text = code[0:-1])
 
-def calc():
-    A = float(arg_A.get())
-    B = float(arg_B.get())
-    C = float(arg_C.get())
-    if A == 0.0:
-        tk.messagebox.showwarning('Error', 'Division by zero!')
+def on_off_music():
+    global MUSIC
+    if MUSIC == 1:
+        mixer.music.stop()
+        MUSIC = 0
     else:
-        lbl_result.configure(text=sqrEquation(A, B, C))
+        mixer.music.play()
+        MUSIC = 1
 
+MUSIC = 0
 
 window = tk.Tk()
-window.geometry('576x360')
-bg_img = tk.PhotoImage(file='bg_pic.png')
+window.title('My app')
+window.geometry('300x300')
+window.resizable(0, 0)
+bg_img = tk.PhotoImage(file=r'C:\Users\Mi\Documents\ITMO\Python\lab_3\tanki_online.png')
+mixer.init()
+mixer.music.load(r'C:\Users\Mi\Documents\ITMO\Python\lab_3\music_8_bit.mp3')
 
-lbl_bg = tk.Label(window, image=bg_img)
-lbl_bg.place(x=0, y=0, relwidth=1, relheight=1)
 
-frame = tk.Frame(window)
-frame.place(relx=0.5, rely=0.5, anchor='center')
+bg_label = tk.Label(window, image=bg_img)
+bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-lbl_A = tk.Label(frame, text='A', font=('Arial', 30), bg='blue', fg='white')
-lbl_A.grid(column=0, row=0, padx=10, pady=15)
-arg_A = tk.Entry(frame, width=10)
-arg_A.insert(0, '1')
-arg_A.grid(column=0, row=1, padx=10, pady=15)
+word_label = tk.Label(window, 
+                      text="XXXX-XXXX-XXXX-XXXX",
+                      font=('Cansolas', 15),
+                      bg='red',
+                      fg='white')
+word_label.place(x=0, y=0, relwidth=1)
 
-lbl_B = tk.Label(frame, text='B', font=('Arial', 30))
-lbl_B.grid(column=1, row=0, padx=10, pady=15)
-arg_B = tk.Entry(frame, width=10)
-arg_B.insert(0, '0')
-arg_B.grid(column=1, row=1, padx=10, pady=15)
 
-lbl_C = tk.Label(frame, text='C', font=('Arial', 30))
-lbl_C.grid(column=2, row=0, padx=10, pady=15)
-arg_C = tk.Entry(frame, width=10)
-arg_C.insert(0, '0')
-arg_C.grid(column=2, row=1, padx=10, pady=15)
+btn_guess = tk.Button(window, 
+                      text="Сгенерировать ключ",
+                      width=17,
+                      command=generate)
+btn_guess.place(relx=0.08, rely=0.55)
 
-lbl_roots = tk.Label(frame, text='Result:')
-lbl_roots.grid(column=1, row=2)
-lbl_result = tk.Label(frame, text='None yet.', font=('Arial', 10))
-lbl_result.grid(column=2, row=2)
+btn_exit = tk.Button(window, 
+                      text="Cancel",
+                      width=15,
+                      command=quit)
+btn_exit.place(relx=0.55, rely=0.55)
 
-btn_calc = tk.Button(frame, text='Calculate', command=calc)
-btn_calc.grid(column=0, row=3, padx=10, pady=15)
-btn_exit = tk.Button(frame, text='Cancel', command=close)
-btn_exit.grid(column=2, row=3, padx=10, pady=15)
+btn_guess = tk.Button(window, 
+                      text="Вкл/выкл музыку",
+                      width=17,
+                      command=on_off_music)
+btn_guess.place(relx=0.3, rely=0.9)
 
 
 window.mainloop()
